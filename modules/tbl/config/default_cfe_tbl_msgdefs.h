@@ -30,6 +30,7 @@
 #include "cfe_mission_cfg.h"
 #include "cfe_es_extern_typedefs.h"
 #include "cfe_time_extern_typedefs.h"
+#include "cfe_tbl_extern_typedefs.h"
 #include "cfe_tbl_fcncodes.h"
 
 /********************************/
@@ -54,8 +55,8 @@ typedef struct CFE_TBL_LoadCmd_Payload
 */
 typedef struct CFE_TBL_DumpCmd_Payload
 {
-    uint16 ActiveTableFlag;                            /**< \brief #CFE_TBL_BufferSelect_INACTIVE=Inactive Table,
-                                                                 #CFE_TBL_BufferSelect_ACTIVE=Active Table */
+    CFE_TBL_BufferSelect_Enum_t ActiveTableFlag;       /**< \brief #CFE_TBL_BufferSelect_INACTIVE=Inactive Table,
+                                                            #CFE_TBL_BufferSelect_ACTIVE=Active Table */
                                                        /**< Selects either the "Inactive"
                                                             (#CFE_TBL_BufferSelect_INACTIVE) buffer or the
                                                             "Active" (#CFE_TBL_BufferSelect_ACTIVE) buffer
@@ -75,8 +76,8 @@ typedef struct CFE_TBL_DumpCmd_Payload
 */
 typedef struct CFE_TBL_ValidateCmd_Payload
 {
-    uint16 ActiveTableFlag;                            /**< \brief #CFE_TBL_BufferSelect_INACTIVE=Inactive Table,
-                                                                 #CFE_TBL_BufferSelect_ACTIVE=Active Table */
+    CFE_TBL_BufferSelect_Enum_t ActiveTableFlag;       /**< \brief #CFE_TBL_BufferSelect_INACTIVE=Inactive Table,
+                                                            #CFE_TBL_BufferSelect_ACTIVE=Active Table */
                                                        /**< Selects either the "Inactive"
                                                             (#CFE_TBL_BufferSelect_INACTIVE) buffer or the
                                                             "Active" (#CFE_TBL_BufferSelect_ACTIVE) buffer
@@ -251,9 +252,7 @@ typedef struct CFE_TBL_TblRegPacket_Payload
                                                         \brief Ptr to Owner App's function that validates tbl contents */
     CFE_TIME_SysTime_t TimeOfLastUpdate;           /**< \cfetlmmnemonic \TBL_TIMELASTUPD
                                                         \brief Time when Table was last updated */
-    uint32 FileCreateTimeSecs;                     /**< \cfetlmmnemonic \TBL_FILECSECONDS
-                                                        \brief File creation time from last file loaded into table */
-    uint32 FileCreateTimeSubSecs;                  /**< \cfetlmmnemonic \TBL_FILECSUBSECONDS
+    CFE_TIME_SysTime_t FileTime;                   /**< \cfetlmmnemonic \TBL_FILECTIME
                                                         \brief File creation time from last file loaded into table */
     bool TableLoadedOnce;                          /**< \cfetlmmnemonic \TBL_LOADEDONCE
                                                         \brief Flag indicating whether table has been loaded once or not */

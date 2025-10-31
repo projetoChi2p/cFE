@@ -395,10 +395,10 @@ int32 CFE_ES_TaskInit(void)
     /*
     ** Task startup event message.
     */
-    CFE_Config_GetVersionString(VersionString, CFE_CFG_MAX_VERSION_STR_LEN, "cFE",
-        CFE_SRC_VERSION, CFE_BUILD_CODENAME, CFE_LAST_OFFICIAL);
-    Status = CFE_EVS_SendEvent(CFE_ES_INIT_INF_EID, CFE_EVS_EventType_INFORMATION, "cFE ES Initialized: %s",
-                               VersionString);
+    CFE_Config_GetVersionString(VersionString, CFE_CFG_MAX_VERSION_STR_LEN, "cFE", CFE_SRC_VERSION, CFE_BUILD_CODENAME,
+                                CFE_LAST_OFFICIAL);
+    Status =
+        CFE_EVS_SendEvent(CFE_ES_INIT_INF_EID, CFE_EVS_EventType_INFORMATION, "cFE ES Initialized: %s", VersionString);
     if (Status != CFE_SUCCESS)
     {
         CFE_ES_WriteToSysLog("%s: Error sending init event:RC=0x%08X\n", __func__, (unsigned int)Status);
@@ -443,7 +443,7 @@ int32 CFE_ES_TaskInit(void)
  * See description in header file for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 CFE_ES_HousekeepingCmd(const CFE_ES_SendHkCmd_t *data)
+int32 CFE_ES_SendHkCmd(const CFE_ES_SendHkCmd_t *data)
 {
     OS_heap_prop_t HeapProp;
     int32          OsStatus;
@@ -638,6 +638,8 @@ int32 CFE_ES_StartAppCmd(const CFE_ES_StartAppCmd_t *data)
     int32                               AppNameLen;
     char                                LocalAppName[OS_MAX_API_NAME];
     CFE_ES_AppStartParams_t             StartParams;
+
+    memset(&StartParams, 0, sizeof(StartParams));
 
     /* Create local copies of all input strings and ensure null termination */
     Result = CFE_FS_ParseInputFileNameEx(StartParams.BasicInfo.FileName, cmd->AppFileName,
@@ -954,7 +956,7 @@ int32 CFE_ES_QueryAllCmd(const CFE_ES_QueryAllCmd_t *data)
     osal_id_t                           FileDescriptor = OS_OBJECT_ID_UNDEFINED;
     uint32                              i;
     uint32                              EntryCount = 0;
-    uint32                              FileSize   = 0;
+    size_t                              FileSize   = 0;
     int32                               OsStatus;
     int32                               Result;
     CFE_ES_AppInfo_t                    AppInfo;
@@ -1091,8 +1093,8 @@ int32 CFE_ES_QueryAllCmd(const CFE_ES_QueryAllCmd_t *data)
         OS_close(FileDescriptor);
         CFE_ES_Global.TaskData.CommandCounter++;
         CFE_EVS_SendEvent(CFE_ES_ALL_APPS_EID, CFE_EVS_EventType_DEBUG,
-                          "App Info file written to %s, Entries=%d, FileSize=%d", QueryAllFilename, (int)EntryCount,
-                          (int)FileSize);
+                          "App Info file written to %s, Entries=%d, FileSize=%lu", QueryAllFilename, (int)EntryCount,
+                          (unsigned long)FileSize);
     }
     else
     {
@@ -1114,7 +1116,7 @@ int32 CFE_ES_QueryAllTasksCmd(const CFE_ES_QueryAllTasksCmd_t *data)
     osal_id_t                           FileDescriptor = OS_OBJECT_ID_UNDEFINED;
     uint32                              i;
     uint32                              EntryCount = 0;
-    uint32                              FileSize   = 0;
+    size_t                              FileSize   = 0;
     int32                               OsStatus;
     int32                               Result;
     CFE_ES_TaskInfo_t                   TaskInfo;
@@ -1243,8 +1245,8 @@ int32 CFE_ES_QueryAllTasksCmd(const CFE_ES_QueryAllTasksCmd_t *data)
         OS_close(FileDescriptor);
         CFE_ES_Global.TaskData.CommandCounter++;
         CFE_EVS_SendEvent(CFE_ES_TASKINFO_EID, CFE_EVS_EventType_DEBUG,
-                          "Task Info file written to %s, Entries=%d, FileSize=%d", QueryAllFilename, (int)EntryCount,
-                          (int)FileSize);
+                          "Task Info file written to %s, Entries=%d, FileSize=%lu", QueryAllFilename, (int)EntryCount,
+                          (unsigned long)FileSize);
     }
     else
     {

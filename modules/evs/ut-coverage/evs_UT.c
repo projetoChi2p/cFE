@@ -172,7 +172,7 @@ static int32 UT_EVS_MSGInitHook(void *UserObj, int32 StubRetcode, uint32 CallCou
     return StubRetcode;
 }
 
-static void UT_EVS_DoDispatchCheckEvents_Impl(void *MsgPtr, uint32 MsgSize, UT_TaskPipeDispatchId_t DispatchId,
+static void UT_EVS_DoDispatchCheckEvents_Impl(void *MsgPtr, size_t MsgSize, UT_TaskPipeDispatchId_t DispatchId,
                                               const UT_SoftwareBusSnapshot_Entry_t *SnapshotCfg,
                                               UT_EVS_EventCapture_t *               EventCapture)
 {
@@ -189,13 +189,13 @@ static void UT_EVS_DoDispatchCheckEvents_Impl(void *MsgPtr, uint32 MsgSize, UT_T
     UT_SetHookFunction(UT_KEY(CFE_SB_TransmitMsg), NULL, NULL);
 }
 
-static void UT_EVS_DoDispatchCheckEvents(void *MsgPtr, uint32 MsgSize, UT_TaskPipeDispatchId_t DispatchId,
+static void UT_EVS_DoDispatchCheckEvents(void *MsgPtr, size_t MsgSize, UT_TaskPipeDispatchId_t DispatchId,
                                          UT_EVS_EventCapture_t *EventCapture)
 {
     UT_EVS_DoDispatchCheckEvents_Impl(MsgPtr, MsgSize, DispatchId, &UT_EVS_LONGFMT_SNAPSHOTDATA, EventCapture);
 }
 
-static void UT_EVS_DoDispatchCheckEventsShort(void *MsgPtr, uint32 MsgSize, UT_TaskPipeDispatchId_t DispatchId,
+static void UT_EVS_DoDispatchCheckEventsShort(void *MsgPtr, size_t MsgSize, UT_TaskPipeDispatchId_t DispatchId,
                                               UT_EVS_EventCapture_t *EventCapture)
 {
     UT_EVS_DoDispatchCheckEvents_Impl(MsgPtr, MsgSize, DispatchId, &UT_EVS_SHORTFMT_SNAPSHOTDATA, EventCapture);
@@ -291,10 +291,17 @@ void Test_Init(void)
 {
     CFE_EVS_EnablePortsCmd_t        bitmaskcmd;
     CFE_EVS_EnableAppEventTypeCmd_t appbitcmd;
-    CFE_SB_MsgId_t                  msgid = CFE_SB_INVALID_MSG_ID;
 
+    CFE_SB_Buffer_t *bufPtr;
+    union 
+    {
+        CFE_SB_Buffer_t   SbBuf;
+        CFE_EVS_NoopCmd_t Noop;
+    } TestMsg;
+    
     UtPrintf("Begin Test Init");
 
+    memset(&TestMsg, 0, sizeof(TestMsg));
     memset(&bitmaskcmd, 0, sizeof(bitmaskcmd));
     memset(&appbitcmd, 0, sizeof(appbitcmd));
 
@@ -321,7 +328,10 @@ void Test_Init(void)
     UT_InitData_EVS();
 
     /* Set unexpected message ID */
-    UT_SetDataBuffer(UT_KEY(CFE_MSG_GetMsgId), &msgid, sizeof(msgid), false);
+    UT_SetupBasicMsgDispatch(&UT_TPID_CFE_EVS_INVALID_MID, 0, true);
+
+    bufPtr = &TestMsg.SbBuf; /* Fake Test Message */
+    UT_SetDataBuffer(UT_KEY(CFE_SB_ReceiveBuffer), &bufPtr, sizeof(bufPtr), false);
 
     UT_EVS_DoGenericCheckEvents(CFE_EVS_TaskMain, &UT_EVS_EventBuf);
     CFE_UtAssert_SYSLOG(EVS_SYSLOG_MSGS[8]);
@@ -2140,5 +2150,5 @@ void Test_Misc(void)
         /* Doesn't matter here that AppID is all the same... */
         EVS_AppDataSetUsed(&CFE_EVS_Global.AppData[i], AppID);
     }
-    UtAssert_UINT32_EQ(CFE_EVS_ReportHousekeepingCmd(NULL), CFE_STATUS_NO_COUNTER_INCREMENT);
+    UtAssert_UINT32_EQ(CFE_EVS_SendHkCmd(NULL), CFE_STATUS_NO_COUNTER_INCREMENT);
 }

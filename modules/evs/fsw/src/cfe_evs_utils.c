@@ -184,7 +184,7 @@ int32 EVS_NotRegistered(EVS_AppData_t *AppDataPtr, CFE_ES_AppId_t CallerID)
  * See description in header file for argument/return detail
  *
  *-----------------------------------------------------------------*/
-bool EVS_IsFiltered(EVS_AppData_t *AppDataPtr, uint16 EventID, uint16 EventType)
+bool EVS_IsFiltered(EVS_AppData_t *AppDataPtr, uint16 EventID, CFE_EVS_EventType_Enum_t EventType)
 {
     EVS_BinFilter_t *FilterPtr;
     bool             Filtered = false;
@@ -449,7 +449,7 @@ void EVS_DisableTypes(EVS_AppData_t *AppDataPtr, uint8 BitMask)
  * See description in header file for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void EVS_GenerateEventTelemetry(EVS_AppData_t *AppDataPtr, uint16 EventID, uint16 EventType,
+void EVS_GenerateEventTelemetry(EVS_AppData_t *AppDataPtr, uint16 EventID, CFE_EVS_EventType_Enum_t EventType,
                                 const CFE_TIME_SysTime_t *TimeStamp, const char *MsgSpec, va_list ArgPtr)
 {
     CFE_EVS_LongEventTlm_t  LongEventTlm;  /* The "long" flavor is always generated, as this is what is logged */
@@ -545,6 +545,7 @@ void EVS_SendViaPorts(CFE_EVS_LongEventTlm_t *EVS_PktPtr)
     CFE_MSG_GetMsgTime(CFE_MSG_PTR(EVS_PktPtr->TelemetryHeader), &PktTime);
     CFE_TIME_Print(TimeBuffer, PktTime);
 
+    /* SAD: No need to check snprintf return; CFE_EVS_MAX_PORT_MSG_LENGTH is sized to accommodate buffer limits */
     snprintf(PortMessage, sizeof(PortMessage), "%s %u/%u/%s %u: %s", TimeBuffer,
              (unsigned int)EVS_PktPtr->Payload.PacketID.SpacecraftID,
              (unsigned int)EVS_PktPtr->Payload.PacketID.ProcessorID, EVS_PktPtr->Payload.PacketID.AppName,
@@ -591,7 +592,7 @@ void EVS_OutputPort(uint8 PortNum, char *Message)
  * See description in header file for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 EVS_SendEvent(uint16 EventID, uint16 EventType, const char *Spec, ...)
+int32 EVS_SendEvent(uint16 EventID, CFE_EVS_EventType_Enum_t EventType, const char *Spec, ...)
 {
     CFE_TIME_SysTime_t Time;
     va_list            Ptr;

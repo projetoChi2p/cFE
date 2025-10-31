@@ -43,12 +43,6 @@ CFE_EVS_Global_t CFE_EVS_Global;
 /* Defines */
 #define CFE_EVS_PANIC_DELAY 500 /**< \brief Task delay before PSP panic */
 
-/*
-** Local function prototypes.
-*/
-void CFE_EVS_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr, CFE_SB_MsgId_t MsgId);
-bool CFE_EVS_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength);
-
 /* Function Definitions */
 
 /*----------------------------------------------------------------
@@ -304,8 +298,8 @@ int32 CFE_EVS_TaskInit(void)
 
     /* Write the AppID to the global location, now that the rest of initialization is done */
     CFE_EVS_Global.EVS_AppID = AppID;
-    CFE_Config_GetVersionString(VersionString, CFE_CFG_MAX_VERSION_STR_LEN, "cFE",
-        CFE_SRC_VERSION, CFE_BUILD_CODENAME, CFE_LAST_OFFICIAL);
+    CFE_Config_GetVersionString(VersionString, CFE_CFG_MAX_VERSION_STR_LEN, "cFE", CFE_SRC_VERSION, CFE_BUILD_CODENAME,
+                                CFE_LAST_OFFICIAL);
     EVS_SendEvent(CFE_EVS_STARTUP_EID, CFE_EVS_EventType_INFORMATION, "cFE EVS Initialized: %s", VersionString);
 
     return CFE_SUCCESS;
@@ -320,8 +314,8 @@ int32 CFE_EVS_TaskInit(void)
 int32 CFE_EVS_NoopCmd(const CFE_EVS_NoopCmd_t *data)
 {
     char VersionString[CFE_CFG_MAX_VERSION_STR_LEN];
-    CFE_Config_GetVersionString(VersionString, CFE_CFG_MAX_VERSION_STR_LEN, "cFE",
-        CFE_SRC_VERSION, CFE_BUILD_CODENAME, CFE_LAST_OFFICIAL);
+    CFE_Config_GetVersionString(VersionString, CFE_CFG_MAX_VERSION_STR_LEN, "cFE", CFE_SRC_VERSION, CFE_BUILD_CODENAME,
+                                CFE_LAST_OFFICIAL);
     EVS_SendEvent(CFE_EVS_NOOP_EID, CFE_EVS_EventType_INFORMATION, "No-op Cmd Rcvd: %s", VersionString);
     return CFE_SUCCESS;
 }
@@ -344,7 +338,7 @@ int32 CFE_EVS_ClearLogCmd(const CFE_EVS_ClearLogCmd_t *data)
  * See description in header file for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 CFE_EVS_ReportHousekeepingCmd(const CFE_EVS_SendHkCmd_t *data)
+int32 CFE_EVS_SendHkCmd(const CFE_EVS_SendHkCmd_t *data)
 {
     uint32                i, j;
     EVS_AppData_t *       AppDataPtr;
@@ -1275,8 +1269,8 @@ int32 CFE_EVS_WriteAppDataFileCmd(const CFE_EVS_WriteAppDataFileCmd_t *data)
                     else
                     {
                         EVS_SendEvent(CFE_EVS_ERR_WRDATFILE_EID, CFE_EVS_EventType_ERROR,
-                                      "Write App Data Command Error: OS_write = %ld, filename = %s", (long)OsStatus,
-                                      LocalName);
+                                      "Write App Data Command Error: At entry = %d, OS_write = %ld, filename = %s",
+                                      (int)EntryCount, (long)OsStatus, LocalName);
                         break;
                     }
                 }

@@ -282,6 +282,38 @@ endfunction(export_variable_cache)
 
 ##################################################################
 #
+# FUNCTION: decode_targetsystem
+#
+#
+function(decode_targetsystem TARGETSYSTEM)
+  # The "BUILD_CONFIG" is a list of items to uniquely identify this build
+  # The first element in the list is the toolchain name, followed by config name(s)
+
+  set(ONE_VAL_ARGS OUTPUT_ARCH_BINARY_DIR OUTPUT_ARCH_TOOLCHAIN_NAME OUTPUT_ARCH_CONFIG_NAME)
+  cmake_parse_arguments(DT "" "${ONE_VAL_ARGS}" "" ${ARGN})
+
+  set(BUILD_CONFIG ${BUILD_CONFIG_${TARGETSYSTEM}})
+  list(GET BUILD_CONFIG 0 ARCH_TOOLCHAIN_NAME)
+  list(REMOVE_AT BUILD_CONFIG 0)
+  # convert to a string which is safe for a directory name
+  string(REGEX REPLACE "[^A-Za-z0-9]" "_" ARCH_CONFIG_NAME "${BUILD_CONFIG}")
+
+  # Export values to parent
+  if (DT_OUTPUT_ARCH_BINARY_DIR)
+    set(${DT_OUTPUT_ARCH_BINARY_DIR} "${CMAKE_BINARY_DIR}/${ARCH_TOOLCHAIN_NAME}/${ARCH_CONFIG_NAME}" PARENT_SCOPE)
+  endif()
+  if (DT_OUTPUT_ARCH_TOOLCHAIN_NAME)
+    set(${DT_OUTPUT_ARCH_TOOLCHAIN_NAME} "${ARCH_TOOLCHAIN_NAME}" PARENT_SCOPE)
+  endif()
+  if (DT_OUTPUT_ARCH_CONFIG_NAME)
+    set(${DT_OUTPUT_ARCH_CONFIG_NAME} "${ARCH_CONFIG_NAME}" PARENT_SCOPE)
+  endif()
+
+endfunction(decode_targetsystem)
+
+
+##################################################################
+#
 # FUNCTION: prepare
 #
 # Called by the top-level CMakeLists.txt to set up prerequisites
@@ -292,12 +324,6 @@ function(prepare)
   if (SIMULATION)
     add_definitions(-DSIMULATION=${SIMULATION})
   endif (SIMULATION)
-
-  # Create directories to hold generated files/wrappers
-  file(MAKE_DIRECTORY "${MISSION_BINARY_DIR}/eds")
-  file(MAKE_DIRECTORY "${MISSION_BINARY_DIR}/obj")
-  file(MAKE_DIRECTORY "${MISSION_BINARY_DIR}/inc")
-  file(MAKE_DIRECTORY "${MISSION_BINARY_DIR}/src")
 
   # Certain runtime variables need to be "exported" to the subordinate build, such as
   # the specific arch settings and the location of all the apps.  This list is collected
@@ -542,13 +568,13 @@ function(process_arch TARGETSYSTEM)
 
   # The "BUILD_CONFIG" is a list of items to uniquely identify this build
   # The first element in the list is the toolchain name, followed by config name(s)
-  set(BUILD_CONFIG ${BUILD_CONFIG_${TARGETSYSTEM}})
-  list(GET BUILD_CONFIG 0 ARCH_TOOLCHAIN_NAME)
-  list(REMOVE_AT BUILD_CONFIG 0)
-  # convert to a string which is safe for a directory name
-  string(REGEX REPLACE "[^A-Za-z0-9]" "_" ARCH_CONFIG_NAME "${BUILD_CONFIG}")
-  set(ARCH_BINARY_DIR "${CMAKE_BINARY_DIR}/${ARCH_TOOLCHAIN_NAME}/${ARCH_CONFIG_NAME}")
-  file(MAKE_DIRECTORY "${ARCH_BINARY_DIR}" "${ARCH_BINARY_DIR}/inc")
+  decode_targetsystem(${TARGETSYSTEM}
+    OUTPUT_ARCH_BINARY_DIR      ARCH_BINARY_DIR
+    OUTPUT_ARCH_TOOLCHAIN_NAME  ARCH_TOOLCHAIN_NAME
+    OUTPUT_ARCH_CONFIG_NAME     ARCH_CONFIG_NAME
+  )
+
+  file(MAKE_DIRECTORY "${ARCH_BINARY_DIR}")
 
   message(STATUS "Configuring for system arch: ${ARCH_TOOLCHAIN_NAME}/${ARCH_CONFIG_NAME}")
 
@@ -577,7 +603,9 @@ function(process_arch TARGETSYSTEM)
         -DMISSION_BINARY_DIR=${MISSION_BINARY_DIR}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=${CMAKE_EXPORT_COMPILE_COMMANDS}
+        -DCFE_EDS_ENABLED_BUILD:BOOL=${CFE_EDS_ENABLED_BUILD}
         ${SELECTED_TOOLCHAIN_FILE}
         ${CFE_SOURCE_DIR}
     WORKING_DIRECTORY

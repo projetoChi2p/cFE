@@ -43,7 +43,7 @@ uint8 UT_Endianess;
 static char           UT_appname[80];
 static char           UT_subsys[5];
 static CFE_ES_AppId_t UT_AppID;
-static uint32         UT_LastCDSSize = 0;
+static size_t         UT_LastCDSSize = 0;
 
 typedef union
 {
@@ -342,13 +342,15 @@ int32 UT_SoftwareBusSnapshotHook(void *UserObj, int32 StubRetcode, uint32 CallCo
 {
     UT_SoftwareBusSnapshot_Entry_t *Snapshot = UserObj;
     const CFE_MSG_Message_t *       MsgPtr   = UT_Hook_GetArgValueByName(Context, "MsgPtr", CFE_MSG_Message_t *);
+    const uint8_t *                 BytePtr;
 
     if (MsgPtr != NULL && Snapshot != NULL)
     {
         ++Snapshot->Count;
         if (Snapshot->SnapshotSize > 0 && Snapshot->SnapshotBuffer != NULL)
         {
-            memcpy(Snapshot->SnapshotBuffer, &MsgPtr->Byte[Snapshot->SnapshotOffset], Snapshot->SnapshotSize);
+            BytePtr = (const uint8 *)MsgPtr;
+            memcpy(Snapshot->SnapshotBuffer, &BytePtr[Snapshot->SnapshotOffset], Snapshot->SnapshotSize);
         }
     }
 
@@ -385,7 +387,7 @@ void UT_SetStatusBSPResetArea(int32 status, uint32 Signature, uint32 ClockSignal
 /*
 ** Set the contents of the buffer to read
 */
-void UT_SetReadBuffer(void *Buff, int NumBytes)
+void UT_SetReadBuffer(void *Buff, size_t NumBytes)
 {
     UT_SetDataBuffer(UT_KEY(OS_read), Buff, NumBytes, true);
 }
@@ -393,7 +395,7 @@ void UT_SetReadBuffer(void *Buff, int NumBytes)
 /*
 ** Set the contents of the header to read
 */
-void UT_SetReadHeader(void *Hdr, int NumBytes)
+void UT_SetReadHeader(void *Hdr, size_t NumBytes)
 {
     UT_SetDataBuffer(UT_KEY(CFE_FS_ReadHeader), Hdr, NumBytes, true);
 }
@@ -409,7 +411,7 @@ void UT_SetDummyFuncRtn(int Return)
 /*
 ** Set the size of the ES reset area
 */
-void UT_SetSizeofESResetArea(int32 Size)
+void UT_SetSizeofESResetArea(size_t Size)
 {
     UT_ResetState(UT_KEY(CFE_PSP_GetResetArea));
     if (Size > 0)
@@ -426,12 +428,12 @@ void UT_SetSizeofESResetArea(int32 Size)
 /*
 ** Set the CDS size returned by the BSP
 */
-uint8 *UT_SetCDSSize(int32 Size)
+uint8 *UT_SetCDSSize(size_t Size)
 {
     UT_ResetState(UT_KEY(CFE_PSP_GetCDSSize));
     UT_ResetState(UT_KEY(CFE_PSP_ReadFromCDS));
     UT_ResetState(UT_KEY(CFE_PSP_WriteToCDS));
-    if (Size <= 0)
+    if (Size == 0)
     {
         UT_LastCDSSize = 0;
         return NULL;
@@ -535,7 +537,7 @@ uint16 UT_GetNumEventsSent(void)
 */
 void UT_DisplayPkt(CFE_MSG_Message_t *MsgPtr, size_t size)
 {
-    uint8 *BytePtr = MsgPtr->Byte;
+    uint8 *BytePtr = (uint8 *)MsgPtr;
     size_t i;
     size_t BufSize = UT_MAX_MESSAGE_LENGTH;
     char   DisplayMsg[UT_MAX_MESSAGE_LENGTH];
@@ -582,7 +584,7 @@ CFE_ES_ResetData_t *UT_GetResetDataPtr(void)
 ** But on the upside this concession avoids a far more complicated issue of
 ** needing a fully-fledged implementation of printf in the OS_printf stub.
 */
-static int UT_StrCmpFormatStr(const char *FormatStr, const char *TestStr, uint32 FormatLength, uint32 TestLength)
+static int UT_StrCmpFormatStr(const char *FormatStr, const char *TestStr, size_t FormatLength, size_t TestLength)
 {
     const char *ChunkStart;
     const char *ChunkEnd;
@@ -682,13 +684,13 @@ static int UT_StrCmpFormatStr(const char *FormatStr, const char *TestStr, uint32
  * A string comparison function that will match exact strings only
  * (Printf style conversion strings are compared literally)
  */
-static int UT_StrCmpExact(const char *RefStr, const char *TestStr, uint32 RefLength, uint32 TestLength)
+static int UT_StrCmpExact(const char *RefStr, const char *TestStr, size_t RefLength, size_t TestLength)
 {
     return (RefLength == TestLength && memcmp(RefStr, TestStr, RefLength) == 0);
 }
 
 static uint32 UT_GetMessageCount(const char *Msg, UT_Buffer_t *Buf,
-                                 int (*Comparator)(const char *, const char *, uint32, uint32))
+                                 int (*Comparator)(const char *, const char *, size_t, size_t))
 {
     uint32 Count  = 0;
     uint32 MsgLen = strlen(Msg);

@@ -1,5 +1,142 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev251
+- 'Fix #2651, initialize pipename buffer'
+- See: <https://github.com/nasa/cFE/pull/2652>
+
+
+## Development Build: equuleus-rc1+dev247
+- 'Fix nasa/cFS#839, Update Workflows to Ubuntu 22.04'
+- See: <https://github.com/nasa/cfe/pull/2648>
+
+
+## Development Build: equuleus-rc1+dev243
+- 'Fix #2645, fix warning error in evs_ut'
+- See: <https://github.com/nasa/cFE/pull/2646>
+
+
+## Development Build: equuleus-rc1+dev239
+- address sanitizer issue in coverage-evs-ALL
+- See <https://github.com/nasa/cFE/pull/2643>
+
+## Development Build: equuleus-rc1+dev235
+- add initialization of table indices
+- See <https://github.com/nasa/cFE/pull/2633>
+
+## Development Build: equuleus-rc1+dev231
+- Update Upload Artifact Version
+- See <https://github.com/nasa/cFE/pull/2631>
+
+## Development Build: equuleus-rc1+dev227
+- Add CFE_TBL_BufferSelect_Enum_t Type Name
+- See <https://github.com/nasa/cFE/pull/2629>
+
+## Development Build: equuleus-rc1+dev223
+- Correct type of ActiveTableFlag variable
+- See <https://github.com/nasa/cFE/pull/2459>
+
+## Development Build: equuleus-rc1+dev219
+- Consistent use of CFE_EVS_EventType_Enum_t for EventType
+- Combine redundant switch blocks to simplify CFE_ES_CleanupObjectCallback
+- Unloading module after failed app start
+- Simplify and clarify EVS_AddLog logic
+- See <https://github.com/nasa/cFE/pull/2308>, <https://github.com/nasa/cFE/pull/2612>, <https://github.com/nasa/cFE/pull/2616>, and <https://github.com/nasa/cFE/pull/2309>
+
+## Development Build: equuleus-rc1+dev209
+- Remove redundant status check in CFE_ES_RegisterCDSEx()
+- See <https://github.com/nasa/cFE/pull/2329>
+
+## Development Build: equuleus-rc1+dev205
+- fix sb coverage test failure
+- Pass the CMAKE_PREFIX_PATH to targets
+- See <https://github.com/nasa/cFE/pull/2602> and <https://github.com/nasa/cFE/pull/2606>
+
+## Development Build: equuleus-rc1+dev199
+- Bump actions/download-artifact from 3 to 4.1.7 in /.github/workflows
+- See <https://github.com/nasa/cFE/pull/2599>
+
+## Development Build: equuleus-rc1+dev195
+- Use string append and add newline
+- Yield cpu to other tasks in SB Perf Test
+- See <https://github.com/nasa/cFE/pull/2596> and <https://github.com/nasa/cFE/pull/2593>
+
+## Development Build: equuleus-rc1+dev187
+- Use proper printf format for size_t
+- See <https://github.com/nasa/cFE/pull/2591>
+
+## Development Build: equuleus-rc1+dev183
+- Runtime Error in coverage-es-ALL, TestApps
+- add config tool for platform-specific settings
+- Adding bytes read check
+- Cast to unsigned int
+- Update comment re. limit of CFE_PLATFORM_SB_HIGHEST_VALID_MSGID
+- Add element to write error event in CFE_EVS_WriteAppDataFileCmd()
+- See <https://github.com/nasa/cFE/pull/2579>, <https://github.com/nasa/cFE/pull/2565>, <https://github.com/nasa/cFE/pull/2584>, <https://github.com/nasa/cFE/pull/2585>, <https://github.com/nasa/cFE/pull/2586>, and <https://github.com/nasa/cFE/pull/2326>
+
+## Development Build: equuleus-rc1+dev167
+- CFE_TIME unit test failure when CFE_MISSION_TIME_AT_TONE_WILL_BE set to true
+- See <https://github.com/nasa/cFE/pull/2573>
+
+## Development Build: equuleus-rc1+dev163
+- Improve CFE_SB_AllocateMessageBuffer error report
+- Update CFE_PLATFORM_ES_DEFAULT_SYSLOG_MODE macro in es_verify.h
+- Update comment re. limits of CFE_PLATFORM_SB_HIGHEST_VALID_MSGID
+- Use size_t for variables/parameters representing size
+- Remove superfluous status assignment in CFE_SB_CreatePipe
+- null value in vsnprintf
+- Adds JSC 2.1 Static Analysis comments
+- Reduces CFE_EVS_MAX_PORT_MSG_LENGTH to prevent new line character truncation
+- See <https://github.com/nasa/cFE/pull/2560>, <https://github.com/nasa/cFE/pull/2344>, <https://github.com/nasa/cFE/pull/2359>, <https://github.com/nasa/cFE/pull/2376>, <https://github.com/nasa/cFE/pull/2496>, <https://github.com/nasa/cFE/pull/2554>, <https://github.com/nasa/cFE/pull/2568>, and <https://github.com/nasa/cFE/pull/2566>
+
+## Development Build: equuleus-rc1+dev141
+- use resourceids for internal table validation and dump control blocks
+- refactor SB to support additional use cases
+- msg api test buffer overrun
+- See <2551>, <2381>, and <2537>
+
+## Development Build: equuleus-rc1+dev137
+- msg api test buffer overrun
+- send CMake message to stdout instead of stderr
+- See <https://github.com/nasa/cFE/pull/2537> and <https://github.com/nasa/cFE/pull/2525>
+
+## Development Build: equuleus-rc1+dev131
+- add handle list operation routines
+- See <https://github.com/nasa/cFE/pull/2548>
+
+## Development Build: equuleus-rc1+dev127
+- improve app dev guide
+- consistent TIME values for TBL structures
+- See <https://github.com/nasa/cFE/pull/2541> and <https://github.com/nasa/cFE/pull/2544>
+
+## Development Build: equuleus-rc1+dev120
+- Switch pc rtems toolchains to use osal generic-rtems bsp
+- table transaction initial implementation
+- See <https://github.com/nasa/cFE/pull/2535> and <https://github.com/nasa/cFE/pull/2539>
+
+## Development Build: equuleus-rc1+dev114
+- Split up and simplify control flow in CFE_TBL_Register()
+- naming convention for SendHkCmd
+- See <https://github.com/nasa/cFE/pull/2387> and <https://github.com/nasa/cFE/pull/2531>
+
+## Development Build: equuleus-rc1+dev107
+- propagate stack pointer for child tasks
+- add missing memset() for stack variables
+- See <https://github.com/nasa/cFE/pull/2517> and <https://github.com/nasa/cFE/pull/2527>
+
+## Development Build: equuleus-rc1+dev100
+- Add runtime TopicId conversion routines to SB
+- See <https://github.com/nasa/cFE/pull/2520>
+
+## Development Build: equuleus-rc1+dev96
+- change CFE_MSG_Message from union to struct
+- Remove unreachable/dead branch in CFE_ES_RunPerfLogDump()
+- See <https://github.com/nasa/cFE/pull/2515> and <https://github.com/nasa/cFE/pull/2330>
+
+## Development Build: equuleus-rc1+dev90
+- EDS XML file updates
+- add EDS cmake hooks
+- See <https://github.com/nasa/cFE/pull/2510> and <https://github.com/nasa/cFE/pull/2511>
+
 ## Development Build: equuleus-rc1+dev84
 - CFE updates needed for generated header compatibility (EDS)
 - See <https://github.com/nasa/cFE/pull/2505>
